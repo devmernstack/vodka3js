@@ -1,0 +1,1145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Casa Tubka · Tequila · Born of the Agave</title>
+<meta name="description" content="Casa Tubka — a tequila from a house in no hurry. Cut slow, kept cold, poured over ice.">
+<meta name="theme-color" content="#1b1c1f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #1b1c1f;
+    --deep: #08090a;
+    --ink: #d9dce1;
+    --bright: #f6f7f9;
+    --dim: #aeb3ba;
+    --muted: rgba(208, 212, 218, .72);
+    --line: rgba(208, 212, 218, .3);
+    --silver: linear-gradient(180deg, #fbfcfd 0%, #cfd3d8 45%, #8e939a 100%);
+    --gutter: clamp(20px, 5vw, 72px);
+    --serif: "Cormorant Garamond", Georgia, serif;
+    --display: "Cinzel", Georgia, serif;
+    --caps: "Syncopate", "Arial Black", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  /* lenis drives the smooth scroll itself, so the browser's own easing has to stand down */
+  html.lenis, html.lenis body { height: auto; }
+  html.lenis { scroll-behavior: auto; }
+  .lenis.lenis-stopped { overflow: clip; }
+  body {
+    background: var(--page); color: var(--ink);
+    font-family: var(--serif); font-weight: 500;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible { outline: 1px solid currentColor; outline-offset: 5px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
+  .grain {
+    position: fixed; inset: 0; z-index: 6; pointer-events: none; opacity: .08; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .silver { background: var(--silver); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .caps { font-family: var(--caps); font-weight: 700; text-transform: uppercase; letter-spacing: .24em; font-size: 10.5px; }
+
+  /* ---------- header + chapter rail ---------- */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 5;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px var(--gutter);
+  }
+  .logo { font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: .3em; text-transform: uppercase; text-decoration: none; }
+  nav { display: flex; gap: clamp(20px, 3vw, 44px); }
+  nav a, .rail a { text-decoration: none; color: var(--bright); opacity: .8; transition: opacity .2s, color .5s; }
+  nav a:hover, nav a:focus-visible { opacity: 1; }
+
+  .rail {
+    position: fixed; right: 22px; top: 50%; transform: translateY(-50%); z-index: 3;
+    list-style: none; padding: 0; display: grid; gap: 18px; justify-items: end;
+  }
+  .rail a { display: flex; align-items: center; gap: 12px; opacity: .45; }
+  .rail b { font-weight: 700; max-width: 0; overflow: hidden; white-space: nowrap; transition: max-width .5s ease; }
+  .rail a::after { content: ""; width: 14px; height: 1px; background: currentColor; transition: width .5s ease; }
+  .rail a:hover b, .rail a:focus-visible b { max-width: 12em; }
+  .rail .here, .rail a:hover { opacity: 1; }
+  .rail .here::after { width: 34px; }
+
+  body.on-light .logo { background: none; color: #17181a; }
+  body.on-light nav a, body.on-light .rail a { color: #17181a; }
+
+  /* ---------- chapters ---------- */
+  main { position: relative; z-index: 2; }
+  .ch { position: relative; pointer-events: none; }
+  .ch a, .ch button { pointer-events: auto; }
+  .pin { height: var(--len); }
+  .frame {
+    position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
+    display: flex; align-items: center; padding: 96px calc(var(--gutter) + 40px) 64px var(--gutter);
+  }
+  .ch:not(.pin) .frame { position: relative; }
+  .frame.right { justify-content: flex-end; }
+  .copy { width: min(38vw, 560px); }
+  .copy.wide { width: min(44vw, 640px); }
+
+  /* copy arrives a line at a time when its chapter is on stage */
+  .rv { opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .9s cubic-bezier(.2, .8, .2, 1); }
+  .ch.in .rv { opacity: 1; transform: none; }
+  .ch.in .rv:nth-child(2) { transition-delay: .08s; }
+  .ch.in .rv:nth-child(3) { transition-delay: .16s; }
+  .ch.in .rv:nth-child(4) { transition-delay: .24s; }
+  .ch.in .rv:nth-child(5) { transition-delay: .32s; }
+
+  .numeral {   /* huge outlined chapter number, set into the corner */
+    position: absolute; right: calc(var(--gutter) + 60px); bottom: 3vh; z-index: -1;
+    font-family: var(--display); font-weight: 700; font-size: clamp(120px, 17vw, 260px); line-height: .8;
+    color: transparent; -webkit-text-stroke: 1px rgba(208, 212, 218, .2);
+  }
+  .frame.right .numeral { right: auto; left: var(--gutter); }
+
+  .eyebrow { color: var(--dim); margin-bottom: 24px; display: flex; align-items: center; gap: 14px; }
+  .eyebrow::before { content: ""; width: 34px; height: 1px; background: currentColor; }
+  h2 {
+    font-family: var(--display); font-weight: 500; text-transform: uppercase; letter-spacing: .03em;
+    font-size: clamp(30px, 3.5vw, 54px); line-height: 1.12;
+  }
+  h2 em {
+    font-family: var(--serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0;
+    font-size: 1.32em; line-height: .9; color: var(--bright); -webkit-text-fill-color: var(--bright);
+  }
+  p { font-size: clamp(18px, 1.5vw, 22px); line-height: 1.45; color: var(--muted); }
+  .lede { margin-top: 26px; max-width: 25em; }
+  .aside { font-style: italic; font-size: clamp(30px, 3.2vw, 46px); color: var(--bright); margin-top: 24px; line-height: 1.1; }
+
+  /* ---------- hero: the can splits the wordmark ---------- */
+  .hero .frame { display: grid; grid-template-rows: auto 1fr auto; align-items: stretch; padding-right: var(--gutter); }
+  .hero .eyebrow { margin: 0; justify-self: center; }
+  .hero .eyebrow::after { content: ""; width: 34px; height: 1px; background: currentColor; }
+  .hero h1 { align-self: end; text-align: center; font-family: var(--serif); font-style: italic; font-weight: 400;
+    font-size: clamp(34px, 5.2vw, 78px); line-height: 1; color: var(--bright); text-shadow: 0 2px 30px rgba(0, 0, 0, .6); padding-bottom: 5vh; }
+  .hero-foot { display: flex; justify-content: space-between; align-items: end; gap: 24px; }
+  .hero-foot p { max-width: 20em; font-size: clamp(16px, 1.3vw, 19px); }
+  .scroll { color: var(--dim); display: flex; align-items: center; gap: 14px; white-space: nowrap; }
+  .scroll::after { content: ""; width: 1px; height: 46px; background: currentColor; transform-origin: 50% 0; animation: drip 2s ease-in-out infinite; }
+  @keyframes drip { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+
+  /* ---------- 01: anatomy, with callouts pinned to the can itself ---------- */
+  .specs { display: flex; gap: clamp(18px, 2.4vw, 36px); margin-top: 34px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .specs dt { font-family: var(--caps); font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); }
+  .specs dd { margin: 12px 0 0; font-size: 20px; color: var(--ink); white-space: nowrap; }
+  .specs dd small { font-family: Arial, sans-serif; font-size: 13px; letter-spacing: .06em; }
+  .callouts { list-style: none; padding: 0; position: absolute; right: calc(var(--gutter) + 56px); top: 0; bottom: 0; width: min(19vw, 270px); }
+  .callouts li { position: absolute; left: 0; right: 0; opacity: 0; transform: translateX(16px); transition: opacity .5s, transform .6s; }
+  .callouts li.on { opacity: .5; transform: none; }
+  .callouts li.on.lit { opacity: 1; }
+  .callouts i { font-style: normal; color: var(--dim); }
+  .callouts h3 { font-family: var(--display); font-weight: 500; font-size: clamp(16px, 1.35vw, 21px); letter-spacing: .08em; text-transform: uppercase; margin-top: 8px; color: var(--bright); }
+  .callouts p { font-size: clamp(15px, 1.15vw, 17px); margin-top: 6px; line-height: 1.35; }
+  #leaders { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+  #leaders line { stroke: #d9dce1; stroke-width: 1; opacity: 0; transition: opacity .4s; }
+  #leaders circle { fill: #f6f7f9; opacity: 0; transition: opacity .4s; }
+  #leaders .on { opacity: .55; }
+  #leaders .lit { opacity: 1; }
+
+  /* ---------- 02: the cold ---------- */
+  .gauge { margin-top: 40px; }
+  .gauge .bar { height: 1px; background: var(--line); position: relative; }
+  .gauge .bar::before { content: ""; position: absolute; inset: -1px auto -1px 0; width: calc(var(--p, 0) * 100%); background: var(--bright); box-shadow: 0 0 14px rgba(190, 225, 255, .9); }
+  .gauge .bar::after { content: ""; position: absolute; top: -5px; left: calc(var(--p, 0) * 100% - 5px); width: 10px; height: 10px; border-radius: 50%; background: var(--bright); }
+  .gauge ol { list-style: none; padding: 0; display: flex; justify-content: space-between; margin-top: 16px; color: var(--dim); }
+  .gauge li { opacity: .45; transition: opacity .4s, color .4s; }
+  .gauge li.on { opacity: 1; color: var(--bright); }
+
+  /* ---------- 03: the ritual ---------- */
+  .steps { list-style: none; padding: 26px 0 0; margin-top: 36px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; position: relative; }
+  .steps::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--line); }
+  .steps::after { content: ""; position: absolute; top: -1px; left: 0; height: 3px; width: calc(var(--p, 0) * 100%); background: var(--silver); }
+  .steps li { opacity: .38; transition: opacity .5s; }
+  .steps li.on { opacity: 1; }
+  .steps i { font-style: normal; color: var(--dim); }
+  .steps h3 { font-family: var(--display); font-weight: 500; font-size: clamp(17px, 1.5vw, 23px); letter-spacing: .1em; text-transform: uppercase; margin: 10px 0 8px; color: var(--bright); }
+  .steps p { font-size: clamp(15px, 1.12vw, 17px); line-height: 1.32; }
+
+  /* ---------- 05: find us, the palette turned inside out ---------- */
+  .find h2 { background: none; color: #17181a; font-size: clamp(38px, 5.4vw, 84px); }
+  .find .eyebrow { color: #4b4f55; }
+  .find p { color: rgba(23, 24, 26, .8); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 18px; margin-top: 38px; padding: 20px 30px;
+    border: 1px solid currentColor; color: var(--bright); text-decoration: none; background: transparent; cursor: pointer;
+    position: relative; overflow: hidden; transition: color .35s;
+  }
+  .btn::before { content: ""; position: absolute; inset: 0; background: currentColor; transform: translateY(101%); transition: transform .35s cubic-bezier(.2, .8, .2, 1); }
+  .btn > * { position: relative; }
+  .btn span:last-child { transition: transform .35s; }
+  .btn:hover span:last-child, .btn:focus-visible span:last-child { transform: translateX(6px); }
+  .find .btn { color: #17181a; }
+  .find .btn:hover, .find .btn:focus-visible { color: #17181a; }
+  .find .btn:hover::before, .find .btn:focus-visible::before { transform: none; }
+  .find .btn:hover > *, .find .btn:focus-visible > * { color: #f6f7f9; }
+  .gate .btn:hover, .gate .btn:focus-visible { background: #d9dce1; color: #17181a; }
+
+  /* ---------- footer ---------- */
+  footer { position: relative; z-index: 4; background: var(--deep); padding: 110px var(--gutter) 28px; overflow: hidden; }
+  .foot { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 40px; }
+  .foot h4 { color: var(--dim); margin-bottom: 26px; }
+  .foot ul { list-style: none; padding: 0; display: grid; gap: 14px; font-size: 20px; }
+  .foot ul a { text-decoration: none; }
+  .foot ul a:hover { text-decoration: underline; }
+  .foot small { display: block; font-size: 15px; line-height: 1.4; color: var(--muted); margin-top: 16px; }
+  .foot .tag { font-style: italic; font-size: clamp(28px, 3vw, 42px); color: var(--bright); line-height: 1.1; }
+  .bigmark { font-family: var(--display); font-weight: 900; font-size: 13.2vw; line-height: .9; letter-spacing: .02em; white-space: nowrap; text-align: center; margin: 70px calc(var(--gutter) * -1) 0; opacity: .9; }
+  .legal { display: flex; justify-content: space-between; gap: 20px; padding-top: 22px; margin-top: 30px; border-top: 1px solid var(--line); font: 12px/1.4 Arial, sans-serif; letter-spacing: .04em; color: var(--muted); }
+
+  /* ---------- age gate ---------- */
+  .gate {
+    position: fixed; inset: 0; z-index: 10; background: var(--page);
+    display: grid; place-items: center; text-align: center; padding: 24px; transition: opacity .6s, visibility .6s;
+  }
+  .gate[hidden] { display: grid; opacity: 0; visibility: hidden; pointer-events: none; }
+  .gate .wordmark { font-family: var(--display); font-weight: 700; font-size: clamp(34px, 5vw, 60px); letter-spacing: .24em; text-transform: uppercase; }
+  .gate h2 { font-family: var(--serif); text-transform: none; letter-spacing: 0; font-style: italic; font-size: clamp(26px, 3vw, 38px); margin: 20px auto 0; max-width: 16em; color: var(--ink); }
+  .gate .btn { margin: 34px 10px 0; }
+  .gate small { display: block; margin-top: 34px; font-size: 16px; color: var(--muted); }
+
+  @media (max-width: 860px) {
+    nav, .rail, .callouts, #leaders, .numeral { display: none; }
+    .frame, .frame.right { align-items: flex-end; justify-content: flex-start; padding: 80px var(--gutter) 34px; }
+    .copy, .copy.wide { width: 100%; }
+    .eyebrow { font-size: 9px; margin-bottom: 14px; }
+    .hero .eyebrow::before, .hero .eyebrow::after { display: none; }
+    .lede { margin-top: 14px; }
+    .specs { margin-top: 18px; padding-top: 14px; }
+    .gauge { margin-top: 22px; }
+    .steps { grid-template-columns: repeat(2, 1fr); margin-top: 18px; padding-top: 16px; gap: 10px 18px; }
+    .steps h3 { margin: 4px 0; font-size: 16px; }
+    .steps li p { display: none; }
+    .steps li.on p { display: block; }
+    .hero h1 { padding-bottom: 3vh; }
+    .foot { grid-template-columns: 1fr 1fr; }
+    .foot > :first-child { grid-column: 1 / -1; }
+    .legal { flex-direction: column; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rv { opacity: 1; transform: none; transition: none; }
+    .scroll::after { animation: none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="scene" aria-hidden="true"></canvas>
+<svg id="leaders" aria-hidden="true"></svg>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-q">
+  <div>
+    <div class="wordmark silver">Casa Tubka</div>
+    <h2 id="gate-q">Are you of legal drinking age where you live?</h2>
+    <div id="gate-actions">
+      <button class="btn caps" id="gate-yes">Yes, come in</button>
+      <button class="btn caps" id="gate-no">Not yet</button>
+    </div>
+    <small id="gate-note">Casa Tubka is made for adults of legal drinking age. Please enjoy it responsibly.</small>
+  </div>
+</div>
+
+<header>
+  <a class="logo silver" href="#top">Casa Tubka</a>
+  <nav class="caps" aria-label="Chapters">
+    <a href="#can">The Can</a>
+    <a href="#cold">The Cold</a>
+    <a href="#ritual">The Ritual</a>
+    <a href="#find">Find Us</a>
+  </nav>
+</header>
+
+<ol class="rail caps" aria-hidden="true">
+  <li><a href="#can"><b>The Can</b>01</a></li>
+  <li><a href="#cold"><b>The Cold</b>02</a></li>
+  <li><a href="#ritual"><b>The Ritual</b>03</a></li>
+  <li><a href="#table"><b>The Table</b>04</a></li>
+  <li><a href="#find"><b>Find Us</b>05</a></li>
+</ol>
+
+<main id="top">
+  <section class="ch hero in">
+    <div class="frame">
+      <div class="eyebrow caps rv">Tequila · Served ice cold</div>
+      <h1 class="rv"><span class="sr-only">Casa Tubka. </span>Born of the agave.</h1>
+      <div class="hero-foot rv">
+        <p>A tequila from a house in no hurry — cut slow, kept cold, and poured for whoever pulled up a chair.</p>
+        <span class="scroll caps">Scroll</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ch pin" id="can" style="--len: 380vh">
+    <div class="frame">
+      <span class="numeral" aria-hidden="true">01</span>
+      <div class="copy">
+        <div class="eyebrow caps rv">01 · The Can</div>
+        <h2 class="silver rv">Charcoal outside. <em>Silver within.</em></h2>
+        <p class="lede rv">Turn it in your hand. Everything the house has to say is on it, and none of it is shouted.</p>
+        <dl class="specs rv">
+          <div><dt>Style</dt><dd>Tequila</dd></div>
+          <div><dt>Strength</dt><dd><small>[ABV]</small> % vol</dd></div>
+          <div><dt>Measure</dt><dd><small>[VOLUME]</small> ml</dd></div>
+        </dl>
+      </div>
+      <ol class="callouts">
+        <li style="top: 20%" data-phi="0" data-v="0.849"><i class="caps">i</i><h3>The Seal</h3><p>The mark of the house, pressed at the shoulder.</p></li>
+        <li style="top: 40%" data-phi="-0.2" data-v="0.66"><i class="caps">ii</i><h3>The Silver</h3><p>Every letter foiled. It catches whatever light the room has.</p></li>
+        <li style="top: 62%" data-phi="0.69" data-v="0.293"><i class="caps">iii</i><h3>The Stamp</h3><p>An agave, perforated and posted in the corner.</p></li>
+        <li style="top: 40%" data-phi="3.1416" data-v="0.6"><i class="caps">iv</i><h3>The Word</h3><p>Round the back: the promise of the house, in its own hand.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="ch pin" id="cold" style="--len: 280vh">
+    <div class="frame right">
+      <span class="numeral" aria-hidden="true">02</span>
+      <div class="copy">
+        <div class="eyebrow caps rv">02 · The Cold</div>
+        <h2 class="silver rv">Cold enough <em>to sweat.</em></h2>
+        <p class="lede rv">Keep scrolling and watch it happen. The colder the can, the more it beads, and the better the first sip.</p>
+        <div class="gauge rv" id="gauge">
+          <div class="bar"></div>
+          <ol class="caps"><li>Cool</li><li>Cold</li><li>Ice cold</li></ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ch pin" id="ritual" style="--len: 480vh">
+    <div class="frame">
+      <span class="numeral" aria-hidden="true">03</span>
+      <div class="copy wide">
+        <div class="eyebrow caps rv">03 · The Ritual</div>
+        <h2 class="silver rv">Pour slowly. <em>It&rsquo;ll wait.</em></h2>
+        <ol class="steps rv" id="steps">
+          <li><i class="caps">01</i><h3>Glass</h3><p>A heavy one, set down and left to wait.</p></li>
+          <li><i class="caps">02</i><h3>Ice</h3><p>Big, clear cubes. More than you think.</p></li>
+          <li><i class="caps">03</i><h3>Pour</h3><p>Tilt the can and let it run over the ice.</p></li>
+          <li><i class="caps">04</i><h3>Salud</h3><p>Lift it to whoever is across the table.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="ch pin" id="table" style="--len: 220vh">
+    <div class="frame right">
+      <span class="numeral" aria-hidden="true">04</span>
+      <div class="copy">
+        <div class="eyebrow caps rv">04 · The Table</div>
+        <h2 class="silver rv">Stay <em>a while.</em></h2>
+        <p class="lede rv">The lights are low and the can is cold. There is room at the bar, and nobody drinks alone in this house.</p>
+        <div class="aside rv">La casa es tuya.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ch find" id="find">
+    <div class="frame">
+      <div class="copy">
+        <div class="eyebrow caps rv">05 · Find Us</div>
+        <h2 class="rv">Find <em style="color: #000; -webkit-text-fill-color: #000">Casa Tubka.</em></h2>
+        <p class="lede rv">Stockists and the first pour are on their way. Leave your name and the house will send word.</p>
+        <a class="btn caps rv" href="#find"><span>Send me word</span><span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer">
+  <div class="foot">
+    <div><div class="tag">Born of the agave.<br>Served ice cold.</div></div>
+    <div>
+      <h4 class="caps">The Tequila</h4>
+      <ul><li><a href="#can">The Can</a></li><li><a href="#cold">The Cold</a></li><li><a href="#ritual">The Ritual</a></li></ul>
+    </div>
+    <div>
+      <h4 class="caps">Say Hello</h4>
+      <ul><li><a href="#">Instagram</a></li><li><a href="#">Stockists</a></li><li><a href="#">Contact</a></li></ul>
+    </div>
+    <div>
+      <h4 class="caps">Responsibly</h4>
+      <small>Please enjoy Casa Tubka responsibly. Not for sale to persons under the legal drinking age.</small>
+    </div>
+  </div>
+  <div class="bigmark silver" aria-hidden="true">CASA TUBKA</div>
+  <div class="legal">
+    <span>&copy; 2026 Casa Tubka</span>
+    <span>[DISTILLERY_NAME] · [DISTILLERY_ADDRESS]</span>
+  </div>
+</footer>
+
+<script>
+  // age gate: remembered for the session only
+  (() => {
+    const gate = document.getElementById('gate');
+    const pass = () => { gate.hidden = true; try { sessionStorage.setItem('ct-age', '1'); } catch {} };
+    try { if (sessionStorage.getItem('ct-age')) gate.hidden = true; } catch {}
+    document.getElementById('gate-yes').addEventListener('click', pass);
+    document.getElementById('gate-no').addEventListener('click', () => {
+      document.getElementById('gate-q').textContent = 'Then come back when you are.';
+      document.getElementById('gate-actions').remove();
+      document.getElementById('gate-note').textContent = 'The house will keep.';
+    });
+  })();
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+    "lenis": "https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.mjs"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import Lenis from 'lenis';
+
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const { clamp, lerp, smoothstep } = THREE.MathUtils;
+const lathe = (pts, segments = 96) => new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(r, y)), segments);
+const makeCanvas = (w, h) => Object.assign(document.createElement('canvas'), { width: w, height: h });
+
+// every texture below is drawn with the web fonts, so wait for them (but never forever)
+const SERIF = '"Cormorant Garamond", Georgia, serif', CAPS = 'Syncopate, Arial, sans-serif', CINZEL = 'Cinzel, Georgia, serif';
+await Promise.race([
+  Promise.all([`900 100px ${CINZEL}`, `700 100px ${CINZEL}`, `italic 400 30px ${SERIF}`, `700 20px ${CAPS}`, `400 20px ${CAPS}`].map(f => document.fonts.load(f))),
+  new Promise(r => setTimeout(r, 3000)),
+]).catch(() => {});
+
+// ---------- renderer / scene ----------
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+const maxAniso = renderer.capabilities.getMaxAnisotropy();
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#1b1c1f');
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.8;
+
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 60);
+camera.position.set(0, 0, 8);
+
+const key = new THREE.DirectionalLight(0xffffff, 3);
+key.position.set(3, 5, 4);
+const rim = new THREE.DirectionalLight(0xcfd8e6, 2.5);
+rim.position.set(-4, 2, -3);
+const coldLight = new THREE.DirectionalLight(0x8fc8ff, 0);     // 02: an icy edge
+coldLight.position.set(5, 1, -2);
+const dayLight = new THREE.DirectionalLight(0xfff4e2, 0);      // 05: daylight
+dayLight.position.set(-6, 2, 3);
+const tableLight = new THREE.PointLight(0xffc58a, 0, 12);      // 04: one warm lamp over the bar
+tableLight.position.set(-2.8, 2.2, 2.6);
+const torch = new THREE.PointLight(0xffffff, 5, 9);            // follows the pointer across the can
+scene.add(key, rim, coldLight, dayLight, tableLight, torch);
+
+const stage = new THREE.Group();       // can + glass + ice + bar, fitted to the viewport as one
+scene.add(stage);
+
+// ---------- can label: one pass for colour, one for roughness (G) / metalness (B) ----------
+const CAN_R = 0.44, CAN_H = 2.39, BODY_Y0 = 0.16, BODY_Y1 = 2.12, LID_Y = 2.36;
+const LW = 2048, LH = 1456;
+
+function agave(g, fill, stroke, scale) {
+  g.fillStyle = fill; g.strokeStyle = stroke; g.lineWidth = 5 * scale;
+  for (const [deg, len] of [[-76, 150], [76, 150], [-56, 190], [56, 190], [-36, 215], [36, 215], [-16, 232], [16, 232], [0, 240]]) {
+    g.save();
+    g.rotate(deg * Math.PI / 180);
+    g.beginPath();
+    g.moveTo(0, 0);
+    g.quadraticCurveTo(-30 * scale, -len * 0.45 * scale, 0, -len * scale);
+    g.quadraticCurveTo(30 * scale, -len * 0.45 * scale, 0, 0);
+    g.fill(); g.stroke();
+    g.restore();
+  }
+}
+// text set along the crown of a circle, like an arched wordmark
+function arcText(g, text, cx, top, radius, fill) {
+  const widths = [...text].map(ch => g.measureText(ch).width + 8);
+  let a = -widths.reduce((s, w) => s + w, 0) / 2 / radius;
+  [...text].forEach((ch, i) => {
+    const mid = a + widths[i] / 2 / radius;
+    g.save();
+    g.translate(cx + Math.sin(mid) * radius, top + radius - Math.cos(mid) * radius);
+    g.rotate(mid);
+    g.fillStyle = fill; g.fillText(ch, 0, 0);
+    g.restore();
+    a += widths[i] / radius;
+  });
+}
+function roundel(g, x, y, ink) {
+  g.strokeStyle = ink; g.fillStyle = ink;
+  g.lineWidth = 3; g.beginPath(); g.arc(x, y, 62, 0, Math.PI * 2); g.stroke();
+  g.lineWidth = 1.5; g.beginPath(); g.arc(x, y, 52, 0, Math.PI * 2); g.stroke();
+  g.font = `700 36px ${CINZEL}`; g.letterSpacing = '4px';
+  g.fillText('CASA', x + 2, y + 2);
+}
+
+function paintLabel(g, ink) {
+  const cx = LW / 2;
+  g.fillStyle = ink.paper; g.fillRect(0, 0, LW, LH);
+  ink.grain?.(g);
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+
+  // foil rules right round the can, top and bottom
+  g.fillStyle = ink.foil(0, LH);
+  for (const [y, h] of [[44, 4], [58, 2], [LH - 60, 2], [LH - 48, 4]]) g.fillRect(0, y, LW, h);
+
+  // ----- front -----
+  roundel(g, cx, 220, ink.foil(150, 290));
+  g.letterSpacing = '0px';
+  g.font = `900 172px ${CINZEL}`; g.textBaseline = 'alphabetic';
+  const face = g.createLinearGradient(0, -140, 0, 10);
+  if (ink.flat) { face.addColorStop(0, ink.flat); face.addColorStop(1, ink.flat); }
+  else { face.addColorStop(0, '#ffffff'); face.addColorStop(0.5, '#c9cdd3'); face.addColorStop(1, '#858a92'); }
+  if (!ink.flat) { g.save(); g.translate(4, 5); arcText(g, 'TUBKA', cx, 540, 1150, 'rgba(0,0,0,.55)'); g.restore(); }
+  arcText(g, 'TUBKA', cx, 540, 1150, face);
+  g.textBaseline = 'middle';
+
+  g.fillStyle = ink.foil(600, 800);
+  g.fillRect(cx - 250, 628, 222, 2); g.fillRect(cx + 28, 628, 222, 2);
+  g.save(); g.translate(cx, 629); g.rotate(Math.PI / 4); g.fillRect(-7, -7, 14, 14); g.restore();
+  g.font = `700 44px ${CAPS}`; g.letterSpacing = '22px';
+  g.fillText('TEQUILA', cx + 11, 702);
+  g.fillRect(cx - 250, 760, 500, 2);
+  g.letterSpacing = '0px';
+  g.font = `italic 400 66px ${SERIF}`;
+  g.globalAlpha = 0.85; g.fillText('Born of the agave', cx, 842); g.globalAlpha = 1;
+
+  // band with the house line, and the agave stamp posted over its end
+  g.fillStyle = ink.band; g.fillRect(cx - 350, 945, 470, 170);
+  g.fillStyle = ink.foil(945, 1115);
+  g.fillRect(cx - 350, 955, 470, 2); g.fillRect(cx - 350, 1103, 470, 2);
+  g.textAlign = 'left';
+  g.font = `700 25px ${CAPS}`; g.letterSpacing = '3px';
+  g.fillText('CUT SLOW, KEPT COLD,', cx - 328, 1003);
+  g.fillText('POURED SLOWER.', cx - 328, 1042);
+  g.font = `700 15px ${CAPS}`; g.letterSpacing = '5px';
+  g.globalAlpha = 0.7; g.fillText('TEQUILA', cx - 328, 1082); g.globalAlpha = 1;
+  g.textAlign = 'center'; g.letterSpacing = '0px';
+
+  g.save();
+  g.translate(cx + 225, 1030); g.rotate(0.07);
+  g.fillStyle = ink.foil(-150, 150); g.fillRect(-112, -142, 224, 284);
+  g.fillStyle = ink.paper;                                  // perforations
+  for (let i = 0; i <= 10; i++) for (const y of [-142, 142]) { g.beginPath(); g.arc(-112 + i * 22.4, y, 7, 0, Math.PI * 2); g.fill(); }
+  for (let i = 0; i <= 12; i++) for (const x of [-112, 112]) { g.beginPath(); g.arc(x, -142 + i * 23.67, 7, 0, Math.PI * 2); g.fill(); }
+  g.strokeStyle = ink.dark; g.lineWidth = 2; g.strokeRect(-92, -122, 184, 244);
+  g.save(); g.translate(0, 62); agave(g, ink.dark, ink.stampGap, 0.62); g.restore();
+  g.fillStyle = ink.dark; g.font = `700 20px ${CINZEL}`; g.letterSpacing = '5px';
+  g.fillText('CASA TUBKA', 3, 96);
+  g.restore();
+
+  g.fillStyle = ink.foil(1200, 1320);
+  g.fillRect(cx - 250, 1222, 500, 2);
+  g.font = `400 21px ${CAPS}`; g.letterSpacing = '10px';
+  g.globalAlpha = 0.8; g.fillText('SERVE ICE COLD', cx + 5, 1280); g.globalAlpha = 1;
+
+  // ----- back: drawn at both edges so it meets across the seam -----
+  for (const bx of [0, LW]) {
+    g.fillStyle = ink.foil(220, 1300); g.letterSpacing = '0px';
+    g.font = `italic 400 110px ${SERIF}`; g.fillText('Salud', bx, 300);
+    g.font = `700 64px ${CINZEL}`; g.letterSpacing = '8px'; g.fillText('CASA TUBKA', bx + 4, 430);
+    g.fillRect(bx - 150, 490, 130, 2); g.fillRect(bx + 20, 490, 130, 2);
+    g.save(); g.translate(bx, 491); g.rotate(Math.PI / 4); g.fillRect(-6, -6, 12, 12); g.restore();
+    g.letterSpacing = '0px'; g.font = `italic 400 31px ${SERIF}`; g.globalAlpha = 0.85;
+    ['The house answers to no clock, only to the', 'agave: that no glass at its bar goes dry,', 'and no pour is ever rushed.']
+      .forEach((line, i) => g.fillText(line, bx, 570 + i * 42));
+    g.globalAlpha = 1;
+    g.font = `400 17px ${CAPS}`; g.letterSpacing = '5px';
+    g.fillText('INGREDIENTS: [INGREDIENTS]', bx + 2, 740);
+    let x = bx - 118;                                        // barcode
+    for (let i = 0; i < 44; i++) { const w = [2, 3, 5][(i * 7 + 3) % 3]; if (i % 2 === 0) g.fillRect(x, 800, w, 120); x += w + 1.6; }
+    g.font = `400 15px ${CAPS}`; g.letterSpacing = '6px';
+    g.fillText('PLEASE ENJOY RESPONSIBLY', bx + 3, 990);
+    roundel(g, bx, 1140, ink.foil(1070, 1210));
+  }
+  g.letterSpacing = '0px';
+}
+
+const labelCanvas = makeCanvas(LW, LH), ormCanvas = makeCanvas(LW, LH);
+{
+  const g = labelCanvas.getContext('2d');
+  paintLabel(g, {
+    paper: '#1c1d20', band: '#2c2e33', dark: '#1a1b1e', stampGap: '#c9ccd1',
+    foil(y0, y1) {
+      const s = g.createLinearGradient(0, y0, 0, y1);
+      s.addColorStop(0, '#f7f8fa'); s.addColorStop(0.5, '#c6cad0'); s.addColorStop(1, '#8f949b');
+      return s;
+    },
+    grain(g) { for (let i = 0; i < 1400; i++) { g.fillStyle = `rgba(255,255,255,${Math.random() * 0.025})`; g.fillRect(Math.random() * LW, 0, 1 + Math.random() * 2, LH); } },
+  });
+  // painted areas: satin and barely metallic. foil: smooth and fully metallic.
+  const FOIL = 'rgb(0,58,255)';
+  paintLabel(ormCanvas.getContext('2d'), { paper: 'rgb(0,122,95)', band: 'rgb(0,140,60)', dark: 'rgb(0,150,40)', stampGap: FOIL, foil: () => FOIL, flat: FOIL });
+}
+const labelTex = new THREE.CanvasTexture(labelCanvas);
+labelTex.colorSpace = THREE.SRGBColorSpace;
+const ormTex = new THREE.CanvasTexture(ormCanvas);
+for (const t of [labelTex, ormTex]) { t.anisotropy = maxAniso; t.wrapS = THREE.RepeatWrapping; t.offset.x = 0.5; }
+
+// ---------- can ----------
+const aluminium = new THREE.MeshStandardMaterial({ color: 0xa9adb4, metalness: 1, roughness: 0.14 });
+const canBody = new THREE.Mesh(
+  lathe([[CAN_R, BODY_Y0], [CAN_R, BODY_Y1]]),
+  new THREE.MeshPhysicalMaterial({ map: labelTex, roughnessMap: ormTex, metalnessMap: ormTex, roughness: 1, metalness: 1, clearcoat: 0.25, clearcoatRoughness: 0.35 })
+);
+const canFoot = new THREE.Mesh(lathe([[0, 0.06], [0.26, 0.04], [0.31, 0], [0.35, 0], [0.385, 0.03], [0.42, 0.08], [0.435, 0.12], [CAN_R, BODY_Y0]]), aluminium);
+const canNeck = new THREE.Mesh(
+  lathe([[CAN_R, BODY_Y1], [0.435, 2.16], [0.42, 2.22], [0.40, 2.28], [0.375, 2.33], [0.392, 2.345], [0.395, 2.37], [0.385, CAN_H], [0.37, CAN_H], [0.362, LID_Y], [0, LID_Y]]),
+  aluminium
+);
+const tab = new THREE.Mesh(new RoundedBoxGeometry(0.2, 0.014, 0.11, 2, 0.006), aluminium);
+tab.position.set(0.07, LID_Y + 0.012, 0);
+// the can is already open; the mouth sits on the -x side of the lid
+const MOUTH = new THREE.Vector3(-0.26, LID_Y, 0);
+const mouth = new THREE.Mesh(new THREE.CircleGeometry(0.1, 32), new THREE.MeshStandardMaterial({ color: 0x050506, roughness: 1 }));
+mouth.rotation.x = -Math.PI / 2;
+mouth.scale.set(0.85, 1.15, 1);
+mouth.position.set(-0.22, LID_Y + 0.002, 0);
+
+// dew: each bead appears once the can is cold enough for it
+const DROPS = 1100;
+const dew = new THREE.InstancedMesh(
+  new THREE.SphereGeometry(1, 12, 8),
+  new THREE.MeshPhysicalMaterial({ color: 0x3b3e44, roughness: 0.03, clearcoat: 1, envMapIntensity: 2.4 }),
+  DROPS
+);
+const drops = Array.from({ length: DROPS }, () => {
+  const size = 0.005 + 0.022 * Math.random() ** 2.6;
+  return {
+    phi: Math.random() * Math.PI * 2, y: lerp(BODY_Y0 - 0.04, BODY_Y1 + 0.02, Math.random()), size,
+    run: size > 0.016 ? 1 + Math.random() * 1.3 : 1 + Math.random() * 0.2,   // big drops sag and streak
+    when: Math.random(),
+  };
+});
+const dropM = new THREE.Object3D();
+function setWet(wet) {
+  drops.forEach((d, i) => {
+    const s = d.size * smoothstep(wet, d.when * 0.85, d.when * 0.85 + 0.15);
+    dropM.position.set(CAN_R * Math.sin(d.phi), d.y, CAN_R * Math.cos(d.phi));
+    dropM.rotation.y = d.phi;
+    dropM.scale.set(s, s * d.run, s * 0.5);
+    dropM.updateMatrix();
+    dew.setMatrixAt(i, dropM.matrix);
+  });
+  dew.instanceMatrix.needsUpdate = true;
+}
+
+const spin = new THREE.Group();        // turns around the can's own axis
+const body = new THREE.Group();
+body.add(canBody, canFoot, canNeck, tab, mouth, dew);
+body.position.y = -CAN_H / 2;          // pivot at the can's centre
+spin.add(body);
+const rig = new THREE.Group();         // scroll-driven placement and tilt
+rig.add(spin);
+stage.add(rig);
+
+// ---------- hero: the wordmark, split by the can that stands in front of it ----------
+function textPlane(text, font, height) {
+  const probe = makeCanvas(8, 8).getContext('2d');
+  probe.font = font;
+  const c = makeCanvas(Math.ceil(probe.measureText(text).width) + 120, 460), g = c.getContext('2d');
+  const fill = g.createLinearGradient(0, 110, 0, 330);
+  fill.addColorStop(0, '#fafbfc'); fill.addColorStop(0.5, '#c4c8ce'); fill.addColorStop(1, '#6f747b');
+  g.font = font; g.fillStyle = fill; g.textBaseline = 'alphabetic';
+  g.fillText(text, 60, 320);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = maxAniso;
+  const width = height * c.width / c.height;
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(width, height).translate(width / 2, 0, 0),   // anchored at its left edge
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false })
+  );
+  return { mesh, width, pad: height * 60 / 460 };
+}
+const WORD_H = 2.5, WORD_GAP = 0.82, WORD_Z = -1.2;
+const casa = textPlane('CASA', `900 300px ${CINZEL}`, WORD_H), tubka = textPlane('TUBKA', `900 300px ${CINZEL}`, WORD_H);
+stage.add(casa.mesh, tubka.mesh);
+
+// ---------- rocks glass: short, straight-sided, diamond-cut ----------
+const GLASS_FLOOR = 0.2, GLASS_H = 1.1, GLASS_R = 0.565, GLASS_INNER_R = 0.5;
+// black + additive: only the reflections show, so the glass reads clear and never hides the ice
+const crystal = new THREE.MeshPhysicalMaterial({
+  color: 0x050607, roughness: 0.03, clearcoat: 1, envMapIntensity: 1.6,
+  transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
+});
+// cut pattern: rings of vertices, each ring turned half a step from the last, joined by flat triangles
+function cutWall(rings, sides) {
+  const at = (b, i) => {
+    const [r, y] = rings[b], phi = (i + (b % 2) * 0.5) * Math.PI * 2 / sides;
+    return [r * Math.sin(phi), y, r * Math.cos(phi)];
+  };
+  const tris = [];
+  for (let b = 0; b < rings.length - 1; b++) {
+    for (let i = 0; i < sides; i++) {
+      if (b % 2 === 0) tris.push(at(b, i), at(b, i + 1), at(b + 1, i), at(b + 1, i), at(b, i + 1), at(b + 1, i + 1));
+      else tris.push(at(b, i), at(b + 1, i + 1), at(b + 1, i), at(b, i), at(b, i + 1), at(b + 1, i + 1));
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(tris.flat(), 3));
+  g.computeVertexNormals();   // non-indexed, so every facet stays flat
+  return g;
+}
+const tumbler = new THREE.Group();
+const cuts = new THREE.Mesh(
+  cutWall([[0.545, 0.05], [0.575, 0.27], [0.55, 0.49], [0.575, 0.71], [0.56, 0.93]], 10),
+  crystal.clone()
+);
+cuts.material.side = THREE.DoubleSide;   // the far-side facets sparkle through the near ones
+cuts.material.envMapIntensity = 2.2;
+const tumblerShell = new THREE.Mesh(
+  lathe([
+    [0.56, 0.93], [GLASS_R, 0.95], [GLASS_R, GLASS_H - 0.01], [GLASS_R - 0.008, GLASS_H],
+    [GLASS_INNER_R + 0.008, GLASS_H], [GLASS_INNER_R, GLASS_H - 0.01], [GLASS_INNER_R, GLASS_FLOOR],
+  ]),
+  crystal
+);
+cuts.renderOrder = tumblerShell.renderOrder = 3;
+// the thick base is solid, so it can afford real refraction
+const tumblerBase = new THREE.Mesh(
+  lathe([[0, 0.004], [0.5, 0.004], [0.535, 0.03], [0.53, 0.194], [0, 0.194]]),
+  new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.02, transmission: 1, thickness: 0.4, ior: 1.5 })
+);
+
+// tequila in the glass: a unit cylinder reshaped each frame to the current level
+const TEQUILA = 0xb06a12;
+const drink = new THREE.Mesh(
+  new THREE.CylinderGeometry(1, 1, 1, 64, 1),
+  new THREE.MeshPhysicalMaterial({ color: TEQUILA, emissive: 0x1c0f00, roughness: 0.05, transparent: true, opacity: 0.62 })
+);
+drink.geometry.userData.unit = drink.geometry.attributes.position.array.slice();
+drink.renderOrder = 2;
+drink.frustumCulled = false;
+function fillTo(level) {
+  const pos = drink.geometry.attributes.position, unit = drink.geometry.userData.unit, r = GLASS_INNER_R - 0.004;
+  for (let i = 0; i < pos.count; i++) pos.setXYZ(i, unit[i * 3] * r, unit[i * 3 + 1] > 0 ? level : GLASS_FLOOR, unit[i * 3 + 2] * r);
+  pos.needsUpdate = true;
+}
+tumbler.add(tumblerBase, drink, cuts, tumblerShell);
+stage.add(tumbler);
+
+const stream = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.034, 0.02, 1, 16).translate(0, -0.5, 0),   // hangs down from the can's mouth
+  new THREE.MeshPhysicalMaterial({ color: TEQUILA, emissive: 0x1c0f00, roughness: 0.05, transparent: true, opacity: 0.8 })
+);
+stage.add(stream);
+
+// ---------- ice ----------
+const frostCanvas = makeCanvas(256, 256);
+{
+  const g = frostCanvas.getContext('2d');
+  g.fillStyle = '#808080'; g.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 90; i++) {
+    const x = Math.random() * 256, y = Math.random() * 256, r = 6 + Math.random() * 26;
+    const blob = g.createRadialGradient(x, y, 0, x, y, r);
+    blob.addColorStop(0, `rgba(255,255,255,${0.05 + Math.random() * 0.12})`);
+    blob.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = blob; g.fillRect(x - r, y - r, r * 2, r * 2);
+  }
+  g.strokeStyle = 'rgba(20,20,20,.5)'; g.lineWidth = 1;
+  for (let i = 0; i < 14; i++) {
+    let x = Math.random() * 256, y = Math.random() * 256;
+    g.beginPath(); g.moveTo(x, y);
+    for (let s = 0; s < 5; s++) g.lineTo(x += (Math.random() - 0.5) * 70, y += (Math.random() - 0.5) * 70);
+    g.stroke();
+  }
+}
+// clear shell around a cloudy core: the core is opaque, so it shows refracted and blurred through the shell
+const iceMat = new THREE.MeshPhysicalMaterial({
+  color: 0xffffff, roughness: 0.07, transmission: 1, thickness: 0.3, ior: 1.31,
+  attenuationColor: 0xd6ecff, attenuationDistance: 1.5, envMapIntensity: 2.2,
+  bumpMap: new THREE.CanvasTexture(frostCanvas), bumpScale: 0.5,
+});
+const coreGeo = new THREE.IcosahedronGeometry(0.075, 2);
+{
+  const pos = coreGeo.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    const k = 1 + 0.3 * Math.sin(x * 40) * Math.sin(y * 46 + 1) + 0.25 * Math.sin(z * 52 + 2);
+    pos.setXYZ(i, x * k, y * k * 1.3, z * k);
+  }
+  coreGeo.computeVertexNormals();
+}
+const coreMat = new THREE.MeshStandardMaterial({ color: 0xf2f8ff, roughness: 1, emissive: 0x555a60 });
+// no two cubes alike: each mould is a rounded box with its faces pushed slightly out of true
+const iceMoulds = [[0.28, 0.26, 0.27, 1.3], [0.25, 0.29, 0.26, 4.1], [0.27, 0.25, 0.29, 7.7]].map(([w, h, d, seed]) => {
+  const g = new RoundedBoxGeometry(w, h, d, 6, 0.04);
+  const pos = g.attributes.position, n = g.attributes.normal;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    const k = 0.012 * (Math.sin(x * 17 + seed) + Math.sin(y * 21 + seed * 2) + Math.sin(z * 19 + seed * 3));
+    pos.setXYZ(i, x + n.getX(i) * k, y + n.getY(i) * k, z + n.getZ(i) * k);
+  }
+  return g;
+});
+// where each cube comes to rest, in glass space
+const ice = [[-0.20, 0.34, 0.10], [0.20, 0.35, 0.08], [0.0, 0.34, -0.22], [-0.12, 0.61, -0.12], [0.17, 0.62, -0.05], [0.0, 0.62, 0.20], [0.03, 0.87, 0.02]]
+  .map((rest, k) => {
+    const mesh = new THREE.Mesh(iceMoulds[k % iceMoulds.length], iceMat);
+    mesh.add(new THREE.Mesh(coreGeo, coreMat));
+    stage.add(mesh);
+    return { mesh, rest: new THREE.Vector3(...rest), seed: k * 2.4 };
+  });
+
+// ---------- 04, the table: polished black stone under one lamp, a dark room far behind ----------
+const TABLE_Y = -1.3;
+const stoneCanvas = makeCanvas(1024, 1024);
+{
+  const g = stoneCanvas.getContext('2d');
+  g.fillStyle = '#0d0d0f'; g.fillRect(0, 0, 1024, 1024);
+  for (let i = 0; i < 26; i++) {                             // veins
+    let x = Math.random() * 1024, y = Math.random() * 1024;
+    g.strokeStyle = `rgba(200,206,214,${0.03 + Math.random() * 0.1})`; g.lineWidth = 0.5 + Math.random() * 1.6;
+    g.beginPath(); g.moveTo(x, y);
+    for (let s = 0; s < 7; s++) g.lineTo(x += 60 + Math.random() * 120, y += (Math.random() - 0.5) * 90);
+    g.stroke();
+  }
+  for (let i = 0; i < 2600; i++) { g.fillStyle = `rgba(255,255,255,${Math.random() * 0.05})`; g.fillRect(Math.random() * 1024, Math.random() * 1024, 1.5, 1.5); }
+}
+const stoneTex = new THREE.CanvasTexture(stoneCanvas);
+stoneTex.colorSpace = THREE.SRGBColorSpace;
+stoneTex.anisotropy = maxAniso;
+const counter = new THREE.Mesh(
+  new THREE.PlaneGeometry(26, 17),
+  // matte on purpose: at this grazing angle any gloss turns the whole slab grey
+  new THREE.MeshLambertMaterial({ map: stoneTex, color: 0x9a9aa0, transparent: true })
+);
+counter.rotation.x = -Math.PI / 2;
+counter.position.set(0, TABLE_Y, -2.5);
+
+const soft = (g, x, y, r, color) => {
+  const b = g.createRadialGradient(x, y, 0, x, y, r);
+  b.addColorStop(0, color); b.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = b; g.fillRect(x - r, y - r, r * 2, r * 2);
+};
+const roomCanvas = makeCanvas(1024, 512);
+{
+  const g = roomCanvas.getContext('2d');
+  g.fillStyle = '#060607'; g.fillRect(0, 0, 1024, 512);
+  for (let i = 0; i < 38; i++) {                             // lamps, far out of focus
+    const tint = ['224,230,238', '255,206,150', '200,208,220'][i % 3];
+    soft(g, Math.random() * 1024, 250 + Math.random() * 230, 10 + Math.random() * 34, `rgba(${tint},${0.05 + Math.random() * 0.2})`);
+  }
+  soft(g, 330, 470, 260, 'rgba(255,190,120,.16)');
+}
+const roomTex = new THREE.CanvasTexture(roomCanvas);
+roomTex.colorSpace = THREE.SRGBColorSpace;
+const room = new THREE.Mesh(
+  new THREE.PlaneGeometry(34, 17),
+  new THREE.MeshBasicMaterial({ map: roomTex, transparent: true, toneMapped: false })
+);
+room.position.set(0, TABLE_Y + 8.4, -11);
+
+const spotCanvas = makeCanvas(256, 256);
+soft(spotCanvas.getContext('2d'), 128, 128, 128, 'rgba(255,255,255,1)');
+const spotTex = new THREE.CanvasTexture(spotCanvas);
+const lampPool = new THREE.Mesh(                              // the lamp's pool of light on the stone
+  new THREE.PlaneGeometry(9, 9),
+  new THREE.MeshBasicMaterial({ map: spotTex, color: 0xffd9b0, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })
+);
+lampPool.rotation.x = -Math.PI / 2;
+lampPool.position.set(-1.75, TABLE_Y + 0.002, 0.2);
+const shadowMat = new THREE.MeshBasicMaterial({ map: spotTex, color: 0x000000, transparent: true, depthWrite: false });
+const shadows = [0, 1].map(() => {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat);
+  m.rotation.x = -Math.PI / 2;
+  return m;
+});
+const bar = new THREE.Group();
+bar.add(room, counter, lampPool, ...shadows);
+stage.add(bar);
+
+// soft pool of light behind the can on the dark chapters
+const glow = new THREE.Mesh(
+  new THREE.PlaneGeometry(13, 13),
+  new THREE.MeshBasicMaterial({ map: spotTex, color: 0xbec6d2, transparent: true, depthWrite: false, toneMapped: false })
+);
+glow.position.z = -4;
+glow.renderOrder = -1;
+scene.add(glow);
+
+// ---------- scroll timeline ----------
+// f = chapter index + progress. Inside a pinned chapter f runs i .. i+0.7 while it is held,
+// then i+0.7 .. i+1 over the screen of scroll that carries it out and the next one in.
+//   at     x      y      z    tiltX turnY     tiltZ  scale
+const canKeys = [
+  [0,     0,    -0.22,  0,   0.04,  0,        0,    1.5],   // hero: dead centre, splitting the wordmark
+  [1.0,   0.72,  0,     0,   0.04,  0.38,     0,    1.6],    // 01: front, turning gently past its callouts
+  [1.38,  0.72,  0,     0,   0.04, -0.42,     0,    1.6],
+  [1.56,  0.72,  0,     0,   0.04, -3.1416,   0,    1.6],    //     ...and round the back
+  [1.72,  0.72,  0,     0,   0.04, -3.1416,   0,    1.6],
+  [2.0,  -1.75, -0.35,  0.6, 0.04, -5.9,      0.06, 2.15],   // 02: close, going cold
+  [2.7,  -1.75, -0.35,  0.6, 0.04, -6.7,      0.06, 2.15],
+  [3.0,   3.1,   0.9,  -0.3, 0.1,  -8.0,     -0.2,  0.8],    // 03: waits above the glass
+  [3.34,  3.1,   1.0,   0,   0.1,  -10.5,    -0.12, 0.8],
+  [3.43,  2.42,  1.15,  0,   0,    -12.566,   2.0,  0.85],   //     tipped over it, mouth down
+  [3.6,   2.42,  1.15,  0,   0,    -12.566,   2.0,  0.85],
+  [3.7,   3.0,  -0.76,  0,   0.04, -12.9,     0,    0.95],   //     set down beside it
+  [4.0,  -2.45, -0.105, 0,   0,    -12.35,    0,    1.0],    // 04: on the bar
+  [4.7,  -2.45, -0.105, 0,   0,    -12.7,     0,    1.0],
+  [5.0,   1.75, -0.05,  0,   0.04, -12.3,    -0.03, 1.55],   // 05: find us
+  [6.0,   1.75, -0.05,  0,   0.04, -12.3,    -0.03, 1.55],
+];
+//   at     x      y (base)  scale
+const glassKeys = [
+  [2.8,   1.5,  -5.2,  1.3],
+  [3.05,  1.5,  -1.9,  1.3],    // set down
+  [3.62,  1.5,  -1.9,  1.3],
+  [3.7,   1.5,  -1.65, 1.3],    // raised
+  [4.0,  -1.1,  TABLE_Y, 1.15],
+  [4.7,  -1.1,  TABLE_Y, 1.15],
+  [4.95, -1.1,  -5.5,  1.15],
+];
+// portrait screens: [at, centre x, lift y, scale] keeps the action in the top half, above the copy
+const narrowKeys = [
+  [0, 0, 0.35, 0.62], [1.0, 0.72, 1.05, 0.5], [1.72, 0.72, 1.05, 0.5], [2.0, -1.75, 1.05, 0.42], [2.7, -1.75, 1.05, 0.42],
+  [3.0, 2.1, 1.05, 0.5], [3.7, 2.1, 1.05, 0.5], [4.0, -1.75, 0.95, 0.55], [4.7, -1.75, 0.95, 0.55], [5.0, 1.75, 1.0, 0.5], [6.0, 1.75, 1.0, 0.5],
+];
+const bgKeys = [
+  [0, '#1b1c1f'], [1.75, '#1b1c1f'], [2.0, '#0a0f14'], [2.7, '#0a0f14'], [3.0, '#1b1c1f'], [3.8, '#1b1c1f'],
+  [4.0, '#060607'], [4.7, '#060607'], [5.0, '#d3d6da'], [6.0, '#d3d6da'],
+].map(([at, c]) => [at, new THREE.Color(c)]);
+const track = keys => { const out = []; return f => sample(keys, f, out)[0]; };
+const wetAt = track([[0, 0.3], [1.75, 0.3], [2.0, 0.12], [2.62, 1], [3.0, 0.6], [4.7, 0.6], [5.0, 0.3], [6, 0.3]]);
+const coldAt = track([[1.8, 0], [2.0, 1], [2.7, 1], [2.9, 0]]);
+const tableAt = track([[3.82, 0], [4.0, 1], [4.7, 1], [4.9, 0]]);
+const dayAt = track([[4.75, 0], [5.0, 1], [6.0, 1]]);
+const heroAt = track([[0, 1], [0.5, 0]]);
+const calloutAt = track([[0.9, 0], [1.0, 1], [1.7, 1], [1.78, 0]]);
+const ICE_START = 3.13, ICE_STAGGER = 0.025, ICE_DURATION = 0.1;
+const POUR_START = 3.44, POUR_LENGTH = 0.14, GLASS_FULL = 0.72;
+
+function sample(keys, f, out) {
+  let i = 0;
+  while (i < keys.length - 2 && f >= keys[i + 1][0]) i++;
+  const a = keys[i], b = keys[i + 1], t = smoothstep(f, a[0], b[0]);
+  for (let j = 1; j < a.length; j++) out[j - 1] = lerp(a[j], b[j], t);
+  return out;
+}
+const damp = (cur, tgt, k) => { for (let j = 0; j < cur.length; j++) cur[j] = lerp(cur[j], tgt[j], k); };
+
+// ---------- DOM that follows the scroll ----------
+const chapters = [...document.querySelectorAll('.ch')];
+const railLinks = [...document.querySelectorAll('.rail a')];
+const gauge = document.getElementById('gauge'), gaugeMarks = [...gauge.querySelectorAll('li')];
+const steps = document.getElementById('steps'), stepItems = [...steps.children];
+const leaders = document.getElementById('leaders'), SVG = 'http://www.w3.org/2000/svg';
+// callouts: each names a spot on the label (angle round the can, height up it) and is tied to it by a hairline
+const callouts = [...document.querySelectorAll('.callouts li')].map(el => {
+  const line = leaders.appendChild(document.createElementNS(SVG, 'line'));
+  const dot = leaders.appendChild(document.createElementNS(SVG, 'circle'));
+  dot.setAttribute('r', 3.5);
+  return { el, line, dot, phi: Number(el.dataset.phi), y: lerp(BODY_Y0, BODY_Y1, Number(el.dataset.v)) };
+});
+let tops = [], pins = [], narrow = false, f = 0;
+
+function readScroll() {
+  const y = scrollY, vh = innerHeight;
+  let i = 0;
+  while (i < chapters.length - 1 && y >= tops[i + 1]) i++;
+  const pinEnd = tops[i] + pins[i], next = i < chapters.length - 1 ? tops[i + 1] : pinEnd + vh;
+  const held = pins[i] > 0 ? clamp((y - tops[i]) / pins[i], 0, 1) : 0;
+  const leaving = clamp((y - pinEnd) / Math.max(next - pinEnd, 1), 0, 1);
+  f = pins[i] > 0 ? i + 0.7 * held + 0.3 * leaving : i + leaving;
+
+  chapters.forEach((c, k) => c.classList.toggle('in', f > k - 0.22 && f < k + 0.86));
+  railLinks.forEach((a, k) => a.classList.toggle('here', f > k + 0.78 && f <= k + 1.78));
+
+  const cold = clamp((f - 2) / 0.62, 0, 1);
+  gauge.style.setProperty('--p', cold);
+  gaugeMarks.forEach((m, k) => m.classList.toggle('on', cold >= [0, 0.5, 0.97][k]));
+  const step = f < 3.12 ? 0 : f < 3.34 ? 1 : f < 3.6 ? 2 : 3;
+  steps.style.setProperty('--p', clamp((f - 3) / 0.62, 0, 1));
+  stepItems.forEach((s, k) => s.classList.toggle('on', k === step));
+}
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  narrow = w / h < 1;
+  tops = chapters.map(c => c.offsetTop);
+  pins = chapters.map(c => Math.max(c.offsetHeight - h, 0));
+  readScroll();
+}
+// smooth scroll: lenis eases the real page scroll, ticked from the render loop so scene and page move in step
+const lenis = reduceMotion ? null : new Lenis({ autoRaf: false, anchors: true, lerp: 0.085, wheelMultiplier: 0.9 });
+const gateEl = document.getElementById('gate');
+if (lenis && !gateEl.hidden) {
+  lenis.stop();
+  new MutationObserver(() => gateEl.hidden && lenis.start()).observe(gateEl, { attributes: true, attributeFilter: ['hidden'] });
+}
+addEventListener('scroll', readScroll, { passive: true });
+addEventListener('resize', resize);
+const footer = document.getElementById('site-footer');
+const pointer = new THREE.Vector2(), pointerSmooth = new THREE.Vector2();
+addEventListener('pointermove', e => pointer.set(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1));
+resize();
+
+// ---------- loop ----------
+const tgtCan = [], tgtGlass = [], fit = [];
+const curCan = sample(canKeys, f, []), curGlass = sample(glassKeys, f, []);
+const clock = new THREE.Clock(), ICE_BLUE = new THREE.Color(0x73b8ff);
+const v = new THREE.Vector3(), n = new THREE.Vector3();
+let elapsed = 0, pour = 0, flow = 0, wetShown = -1;
+
+renderer.setAnimationLoop(time => {
+  if (lenis) { lenis.raf(time); readScroll(); }
+  const dt = Math.min(clock.getDelta(), 0.05);
+  elapsed += dt;
+  const idle = reduceMotion ? 0 : 1;
+  const ease = reduceMotion ? 1 : 1 - Math.exp(-dt * 5);
+
+  damp(curCan, sample(canKeys, f, tgtCan), ease);
+  damp(curGlass, sample(glassKeys, f, tgtGlass), ease);
+  pointerSmooth.lerp(pointer, 1 - Math.exp(-dt * 4));
+  const cold = coldAt(f), table = tableAt(f), day = dayAt(f), hero = heroAt(f);
+
+  // fit the whole stage to the viewport
+  if (narrow) {
+    sample(narrowKeys, f, fit);
+    stage.scale.setScalar(fit[2]);
+    stage.position.set(-fit[0] * fit[2], fit[1], 0);
+  } else {
+    stage.scale.setScalar(clamp(camera.aspect / 1.6, 0.6, 1));
+    stage.position.set(0, 0, 0);
+  }
+
+  // can: idle sway fades out as it tips, so the mouth always ends up over the glass
+  const [cx, cy, cz, tiltX, turnY, tiltZ, canScale] = curCan;
+  const upright = (1 - smoothstep(Math.abs(tiltZ), 0.3, 1.2)) * (1 - table);
+  rig.position.set(cx, cy + Math.sin(elapsed * 1.2) * 0.035 * idle * upright, cz);
+  rig.rotation.set(tiltX + pointerSmooth.y * 0.06 * upright, pointerSmooth.x * 0.14 * upright, tiltZ);
+  rig.scale.setScalar(canScale);
+  spin.rotation.y = turnY + Math.sin(elapsed * 0.5) * 0.12 * idle * upright * (1 - calloutAt(f));
+
+  const wet = wetAt(f);
+  if (Math.abs(wet - wetShown) > 0.004) { setWet(wet); wetShown = wet; }
+
+  // hero wordmark: the two halves part as the page starts to move
+  casa.mesh.visible = tubka.mesh.visible = hero > 0.002;
+  if (casa.mesh.visible) {
+    const halfWidth = Math.tan(camera.fov * Math.PI / 360) * (camera.position.z - WORD_Z) * camera.aspect / stage.scale.x;
+    const part = (1 - hero) * 3.5;
+    if (narrow) {   // stacked above and below the can instead of either side of it
+      const k = (halfWidth * 2 - 0.5) / (tubka.width - tubka.pad * 2);
+      casa.mesh.scale.setScalar(k); tubka.mesh.scale.setScalar(k);
+      casa.mesh.position.set(-casa.width * k / 2 - part, 2.05, WORD_Z);      // above the can
+      tubka.mesh.position.set(-tubka.width * k / 2 + part, -2.5, WORD_Z);    // and below it
+    } else {
+      const k = (halfWidth - WORD_GAP - 0.3) / (tubka.width - tubka.pad * 2);
+      casa.mesh.scale.setScalar(k); tubka.mesh.scale.setScalar(k);
+      casa.mesh.position.set(-WORD_GAP - (casa.width - casa.pad) * k - part, 0.1, WORD_Z);
+      tubka.mesh.position.set(WORD_GAP - tubka.pad * k + part, 0.1, WORD_Z);
+    }
+    casa.mesh.material.opacity = tubka.mesh.material.opacity = hero;
+  }
+
+  // glass
+  const [gx, gy, glassScale] = curGlass;
+  tumbler.position.set(gx, gy, 0);
+  tumbler.scale.setScalar(glassScale);
+  tumbler.visible = gy > -4.6;
+
+  // pour: the level in the glass follows the scroll
+  // but it only rises while the stream is actually running, so no tequila shows before the can tips
+  const pourTarget = clamp((f - POUR_START) / POUR_LENGTH, 0, 1);
+  const flowing = tiltZ > 1.75 && pourTarget > 0.005 && pour < 0.985;
+  flow = lerp(flow, flowing ? 1 : 0, 1 - Math.exp(-dt * 10));
+  const poured = f > POUR_START + POUR_LENGTH + 0.08;   // can already set down (or page opened past it): glass is full
+  const pourGoal = reduceMotion || poured || flow > 0.6 ? pourTarget : Math.min(pour, pourTarget);
+  pour = lerp(pour, pourGoal, reduceMotion ? 1 : 1 - Math.exp(-dt * 4));
+  const level = GLASS_FLOOR + pour * GLASS_FULL;
+  drink.visible = pour > 0.004;
+  fillTo(level);
+
+  // stream from the can's mouth down to the surface in the glass
+  stage.updateMatrixWorld(true);
+  stage.worldToLocal(body.localToWorld(v.copy(MOUTH)));
+  stream.position.copy(v);
+  stream.scale.set(flow, Math.max(v.y - (gy + level * glassScale), 0.001), flow);
+  stream.visible = flow > 0.02;
+
+  // ice: each cube drops in from above, then rides with the glass
+  ice.forEach((c, k) => {
+    const t = clamp((f - ICE_START - k * ICE_STAGGER) / ICE_DURATION, 0, 1);
+    const restY = gy + (c.rest.y + 0.07 * pour) * glassScale;          // cubes lift a little as the drink comes in
+    c.mesh.visible = t > 0 && tumbler.visible;
+    c.mesh.position.set(gx + c.rest.x * glassScale, lerp(4.2, restY, t * t), c.rest.z * glassScale);
+    c.mesh.rotation.set(c.seed + (1 - t) * 3, c.seed * 2 + (1 - t) * 4, c.seed * 3);
+    c.mesh.scale.setScalar(glassScale);
+  });
+
+  // callouts: follow their spot on the label, and show only while it faces us
+  const calling = calloutAt(f) > 0.5 && !narrow;
+  const p1 = clamp((f - 1) / 0.7, 0, 1), lit = p1 < 0.18 ? 0 : p1 < 0.36 ? 1 : p1 < 0.62 ? 2 : 3;
+  callouts.forEach((c, k) => {
+    body.localToWorld(v.set(CAN_R * Math.sin(c.phi), c.y, CAN_R * Math.cos(c.phi)));
+    body.localToWorld(n.set(0, c.y, 0));
+    const facing = (v.z - n.z) / v.distanceTo(n);
+    const on = calling && facing > 0.45, hot = on && k === lit;
+    c.el.classList.toggle('on', on); c.el.classList.toggle('lit', hot);
+    for (const s of [c.line, c.dot]) { s.classList.toggle('on', on); s.classList.toggle('lit', hot); }
+    if (!on) return;
+    v.project(camera);
+    const x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight, r = c.el.getBoundingClientRect();
+    c.line.setAttribute('x1', r.left - 16); c.line.setAttribute('y1', r.top + 6);
+    c.line.setAttribute('x2', x); c.line.setAttribute('y2', y);
+    c.dot.setAttribute('cx', x); c.dot.setAttribute('cy', y);
+  });
+
+  // the table
+  bar.visible = table > 0.002;
+  counter.material.opacity = room.material.opacity = table;
+  lampPool.material.opacity = table * 0.22;
+  shadowMat.opacity = table * 0.85;
+  shadows[0].position.set(cx, TABLE_Y + 0.004, 0); shadows[0].scale.setScalar(canScale * 1.7);
+  shadows[1].position.set(gx, TABLE_Y + 0.005, 0); shadows[1].scale.setScalar(glassScale * 1.9);
+
+  // light
+  tableLight.intensity = 46 * table;
+  coldLight.intensity = 5 * cold;
+  dayLight.intensity = 4.5 * day;
+  torch.position.set(pointerSmooth.x * 4.2, -pointerSmooth.y * 2.6, 3.4);
+  torch.intensity = 5 * (1 - day);
+  document.body.classList.toggle('on-light', day > 0.5);
+
+  // backdrop
+  let b = 0;
+  while (b < bgKeys.length - 2 && f >= bgKeys[b + 1][0]) b++;
+  scene.background.lerpColors(bgKeys[b][1], bgKeys[b + 1][1], smoothstep(f, bgKeys[b][0], bgKeys[b + 1][0]));
+  glow.material.opacity = 0.2 * (1 - day) * (1 - table);
+  glow.material.color.set(0xbec6d2).lerp(ICE_BLUE, cold * 0.8);
+  glow.position.x = cx * stage.scale.x + stage.position.x;
+
+  // footer: as it rises, shift the camera's view up by the same pixels, so the whole scene rides
+  // up with the page and sits on top of the footer instead of sliding underneath it
+  const w = innerWidth, h = innerHeight, lift = clamp(h - footer.getBoundingClientRect().top, 0, h);
+  if (lift > 0) camera.setViewOffset(w, h, 0, lift, w, h);
+  else if (camera.view?.enabled) camera.clearViewOffset();
+  if (lift >= h) return;                         // footer fills the screen: nothing of the scene to draw
+
+  renderer.render(scene, camera);
+});
+</script>
+</body>
+</html>
