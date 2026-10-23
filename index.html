@@ -25,7 +25,10 @@
     --caps: "Syncopate", "Arial Black", sans-serif;
   }
   * { box-sizing: border-box; margin: 0; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; scrollbar-color: var(--dim) var(--deep); }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: var(--dim); border: 2px solid var(--deep); border-radius: 10px; }
   /* lenis drives the smooth scroll itself, so the browser's own easing has to stand down */
   html.lenis, html.lenis body { height: auto; }
   html.lenis { scroll-behavior: auto; }
